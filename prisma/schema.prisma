@@ -1,0 +1,139 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  name                String
+  email               String    @unique
+  phone               String?   @unique
+  password            String?
+  provider            String    @default("credentials") // credentials, google, github
+  role                String    @default("admin") // admin, user
+  isActive            Boolean   @default(true)
+  emailVerified       Boolean   @default(false)
+  phoneVerified       Boolean   @default(false)
+  isVerified          Boolean   @default(false)
+  failedLoginAttempts Int       @default(0)
+  lockUntil           DateTime?
+  lastFailedLogin     DateTime?
+  lastLogin           DateTime?
+  image               String?
+  resetToken          String?
+  resetTokenExpiry    DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model ContactMessage {
+  id          String  @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  subject     String?
+  message     String
+  projectType String  @default("website")
+  budget      String?
+  priority    String  @default("medium") // low, medium, high
+  timeline    String?
+  ip          String  @default("unknown")
+  userAgent   String  @default("unknown")
+  source      String  @default("contact_form")
+  status      String  @default("new") // new, read, replied
+
+  // وضعیت خوانده‌شدن
+  isRead Boolean   @default(false)
+  readAt DateTime?
+
+  // وضعیت پاسخ
+  isReplied Boolean   @default(false)
+  repliedAt DateTime?
+  replyText String? // اگر پاسخ را ذخیره می‌کنی
+  replies   Reply[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
+  @@index([isRead, createdAt(sort: Desc)])
+  @@map("contact_messages")
+}
+
+model Reply {
+  id               String         @id @default(cuid())
+  text             String
+  repliedBy        String
+  emailSent        Boolean        @default(false)
+  emailSentAt      DateTime?
+  contactMessageId String
+  contactMessage   ContactMessage @relation(fields: [contactMessageId], references: [id], onDelete: Cascade)
+  createdAt        DateTime       @default(now())
+
+  @@map("contact_replies")
+}
+
+model FaqQuestion {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  question   String
+  status     String   @default("new") // new, reviewing, answered, rejected
+  ip         String?
+  userAgent  String?
+  adminReply String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([createdAt(sort: Desc)])
+  @@index([status])
+  @@map("faq_questions")
+}
+
+model PortfolioProject {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String // ecommerce, personal, restaurant, etc.
+  image       String   @default("🚀")
+  demoUrl     String?
+  githubUrl   String?
+  tech        String[] // آرایه رشته‌ای در PostgreSQL
+  client      String?
+  duration    String?
+  year        String
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("portfolio_projects")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model AuthLog {
+  id          String   @id @default(cuid())
+  type        String
+  userId      String?
+  metadata    Json?
+  environment String   @default("development")
+  timestamp   DateTime @default(now())
+
+  @@index([type, timestamp])
+  @@index([userId, timestamp])
+}

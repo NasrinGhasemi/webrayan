@@ -1,0 +1,71 @@
+{
+  "name": "webrayandev",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "build:standalone": "npm run build && xcopy /E /I /Y .next\\static .next\\standalone\\.next\\static && xcopy /E /I /Y public .next\\standalone\\public",
+    "start": "node .next/standalone/server.js",
+    "lint": "eslint .",
+    "postinstall": "prisma generate",
+    "deploy": "npm run build && npm run copy-files",
+    "seed:admin": "node scripts/create-admin.js"
+  },
+  "dependencies": {
+    "@alloc/quick-lru": "^5.2.0",
+    "@heroicons/react": "^2.2.0",
+    "@hookform/resolvers": "^5.2.2",
+    "@prisma/client": "5.22.0",
+    "@upstash/ratelimit": "^2.0.6",
+    "@upstash/redis": "^1.35.6",
+    "axios": "^1.13.2",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "dotenv": "^17.2.3",
+    "framer-motion": "^12.23.26",
+    "isomorphic-dompurify": "^2.15.0",
+    "lightningcss": "^1.30.2",
+    "lint": "^1.2.2",
+    "lru-cache": "^11.2.4",
+    "lucide-react": "^0.562.0",
+    "next": "^15.5.20",
+    "next-auth": "^5.0.0-beta.29",
+    "nodemailer": "^10.2.1",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-hook-form": "^7.64.0",
+    "react-icons": "^5.5.0",
+    "undici": "^7.16.0",
+    "winston": "^3.19.0",
+    "zod": "^4.2.1",
+    "zxcvbn": "^4.4.2"
+  },
+  "overrides": {
+    "cookie": "^0.7.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.6",
+    "@next/bundle-analyzer": "^16.0.1",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^24",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.4.21",
+    "cross-env": "^10.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "^15.5.20",
+    "eslint-config-prettier": "^10.1.8",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "prisma": "5.22.0",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  }
+}
